@@ -83,6 +83,7 @@ public class TaskQuestionFragment extends Fragment {
         }
         // Update database: task status and score
         currentTask.setScore(score);
+        currentTask.setTotalQuestion(currentQuestionList.size());
         currentTask.setFinish(true);
         studentTaskDao.update(currentTask);
 

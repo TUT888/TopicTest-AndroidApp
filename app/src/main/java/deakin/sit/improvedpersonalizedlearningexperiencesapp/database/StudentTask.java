@@ -24,12 +24,16 @@ public class StudentTask {
     @ColumnInfo(name = "score")
     private int score;
 
+    @ColumnInfo(name = "totalQuestion")
+    private int totalQuestion;
+
     public StudentTask(int studentID, String title, String description) {
         this.studentID = studentID;
         this.title = title;
         this.description = description;
         this.finish = false;
         this.score = 0;
+        this.totalQuestion = 0;
     }
 
     public int getId() {
@@ -78,5 +82,13 @@ public class StudentTask {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public int getTotalQuestion() {
+        return totalQuestion;
+    }
+
+    public void setTotalQuestion(int totalQuestion) {
+        this.totalQuestion = totalQuestion;
     }
 }

@@ -12,15 +12,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
+import deakin.sit.improvedpersonalizedlearningexperiencesapp.account.AccountViewActivity;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTask;
 
 public class StudentTaskAdapter extends RecyclerView.Adapter<StudentTaskAdapter.ViewHolder> {
     List<StudentTask> studentTasks;
     HomeActivity homeActivity;
-
+    AccountViewActivity accountViewActivity;
     public StudentTaskAdapter(List<StudentTask> studentTasks, HomeActivity homeActivity) {
         this.studentTasks = studentTasks;
         this.homeActivity = homeActivity;
+        this.accountViewActivity = null;
+    }
+
+    public StudentTaskAdapter(List<StudentTask> studentTasks, AccountViewActivity accountViewActivity) {
+        this.studentTasks = studentTasks;
+        this.homeActivity = null;
+        this.accountViewActivity = accountViewActivity;
     }
 
     @NonNull
@@ -36,9 +44,17 @@ public class StudentTaskAdapter extends RecyclerView.Adapter<StudentTaskAdapter.
 
         holder.taskTitleTextView.setText(studentTask.getTitle());
         holder.taskDescriptionTextView.setText(studentTask.getDescription());
-        holder.beginTaskButton.setOnClickListener(view -> {
-            homeActivity.beginTask(studentTask.getId());
-        });
+
+        if (accountViewActivity!=null) {
+            holder.beginTaskButton.setText("View task");
+            holder.beginTaskButton.setOnClickListener(view -> {
+                accountViewActivity.viewTask(studentTask.getId());
+            });
+        } else if (homeActivity!=null) {
+            holder.beginTaskButton.setOnClickListener(view -> {
+                homeActivity.beginTask(studentTask.getId());
+            });
+        }
     }
 
     @Override

@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Random;
 
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
+import deakin.sit.improvedpersonalizedlearningexperiencesapp.account.AccountViewActivity;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.AppDatabase;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.Student;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentInterest;
@@ -60,7 +61,7 @@ public class HomeActivity extends AppCompatActivity {
     TextView studentNameTextView, notificationTextView;
     RecyclerView taskListRecyclerView;
     LinearLayout loadingContainer;
-    Button generateButton;
+    Button generateButton, viewAccountButton;
 
     StudentTaskAdapter studentTaskAdapter;
 
@@ -92,9 +93,11 @@ public class HomeActivity extends AppCompatActivity {
         taskListRecyclerView = findViewById(R.id.taskListRecyclerView);
         loadingContainer = findViewById(R.id.loadingContainer);
         generateButton = findViewById(R.id.generateButton);
+        viewAccountButton = findViewById(R.id.viewAccountButton);
 
         // Config button
         generateButton.setOnClickListener(this::generateTaskWithAI);
+        viewAccountButton.setOnClickListener(this::startViewAccountActivity);
 
         // Config views
         studentNameTextView.setText(currentStudent.getName());
@@ -110,6 +113,12 @@ public class HomeActivity extends AppCompatActivity {
                 new ActivityResultContracts.StartActivityForResult(),
                 this::handleResultFromTaskActivity
         );
+    }
+
+    public void startViewAccountActivity(View view) {
+        Intent intent = new Intent(this, AccountViewActivity.class);
+        intent.putExtra("Student", currentStudent);
+        startActivity(intent);
     }
 
     public void loadTaskAndRefresh() {

@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
+import deakin.sit.improvedpersonalizedlearningexperiencesapp.account.AccountTaskHistoryFragment;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskQuestion;
 
 public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHolder> {
@@ -29,6 +30,11 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
     }
 
     public QuestionAdapter(List<StudentTaskQuestion> currentQuestionList, TaskResultFragment fragment) {
+        this.currentQuestionList = currentQuestionList;
+        this.fragment = fragment;
+    }
+
+    public QuestionAdapter(List<StudentTaskQuestion> currentQuestionList, AccountTaskHistoryFragment fragment) {
         this.currentQuestionList = currentQuestionList;
         this.fragment = fragment;
     }
@@ -56,7 +62,7 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.ViewHo
             String choice = choices[i];
             RadioButton radio = holder.itemView.findViewById(radioID);
             radio.setText(choice);
-            if (fragment.getClass() == TaskResultFragment.class) {
+            if ((fragment.getClass() == TaskResultFragment.class) || (fragment.getClass() == AccountTaskHistoryFragment.class)) {
                 int selected = question.getSelectedAnswer();
                 int correct = question.getCorrectAnswer();
                 int textColor = selected==i ? (correct==i ? Color.GREEN : Color.RED) : (correct==i ? Color.GREEN : Color.BLACK);
