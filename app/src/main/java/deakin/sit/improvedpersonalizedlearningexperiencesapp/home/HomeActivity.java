@@ -89,10 +89,14 @@ public class HomeActivity extends AppCompatActivity {
 
         // Config views
         studentNameTextView.setText(currentStudent.getName());
-        notificationTextView.setText(String.format("You have 0 task to do"));
+        if (availableTasks==null) {
+            availableTasks = new ArrayList<StudentTask>();
+            notificationTextView.setText(String.format("You have 0 task to do"));
+        } else {
+            notificationTextView.setText(String.format("You have " + availableTasks.size() + " task to do"));
+        }
 
         // Config recycler views
-        availableTasks = new ArrayList<StudentTask>();
         studentTaskAdapter = new StudentTaskAdapter(availableTasks, this);
         taskListRecyclerView.setAdapter(studentTaskAdapter);
         taskListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -171,7 +175,6 @@ public class HomeActivity extends AppCompatActivity {
                             ));
                         }
                         addNewTaskToServer(newTask);
-                        fetchAvailableTask();
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing JSON: " + e.getMessage(), e);
                         Toast.makeText(HomeActivity.this, "Error parsing JSON: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -264,6 +267,7 @@ public class HomeActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             Toast.makeText(HomeActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
+                            fetchAvailableTask();
                         } catch (Exception e) {
                             Log.e(TAG, "Error parsing response: " + e.getMessage(), e);
                             Toast.makeText(HomeActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -308,12 +312,11 @@ public class HomeActivity extends AppCompatActivity {
                                     JSONArray choicesJSONArray = jsonQuestion.getJSONArray("choices");
                                     String[] choicesArray = new String[choicesJSONArray.length()];
                                     for (int c = 0; c < choicesJSONArray.length(); c++) {
-                                        choicesArray[c] = choicesJSONArray.getString(i);
+                                        choicesArray[c] = choicesJSONArray.getString(c);
                                     }
                                     taskQuestions.add(new StudentTaskQuestion(
                                         jsonQuestion.getString("title"),
                                         jsonQuestion.getString("description"),
-//                                        jsonQuestion.getJSONArray("choices").join("\t").split("\t"),
                                         choicesArray,
                                         jsonQuestion.getInt("correctAnswer"),
                                         jsonQuestion.getInt("selectedAnswer")
