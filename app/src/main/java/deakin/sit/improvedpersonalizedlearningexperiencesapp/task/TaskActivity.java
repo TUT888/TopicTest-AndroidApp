@@ -2,6 +2,7 @@ package deakin.sit.improvedpersonalizedlearningexperiencesapp.task;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,13 +12,19 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 
+import java.util.List;
+
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
+import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTask;
+import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskQuestion;
 
 public class TaskActivity extends AppCompatActivity {
     FragmentContainerView fragmentContainerView;
     FragmentManager fragmentManager;
     TaskQuestionFragment taskQuestionFragment;
     TaskResultFragment taskResultFragment;
+
+    StudentTask currentTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,20 +39,23 @@ public class TaskActivity extends AppCompatActivity {
 
         // Get data
         Intent intent = getIntent();
-        int taskID = intent.getIntExtra("TaskID", -1);
+        currentTask = (StudentTask) intent.getSerializableExtra("StudentTask");
 
         // Setup views
         fragmentContainerView = findViewById(R.id.fragmentContainerView);
 
         // Config fragments
-        taskQuestionFragment = new TaskQuestionFragment(taskID);
-        taskResultFragment = new TaskResultFragment(taskID);
+//        taskQuestionFragment = new TaskQuestionFragment(taskID);
+//        taskResultFragment = new TaskResultFragment(taskID);
+        taskQuestionFragment = new TaskQuestionFragment();
+        taskResultFragment = new TaskResultFragment();
 
         fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.fragmentContainerView, taskQuestionFragment).commit();
     }
 
-    public void finishTask() {
+    public void finishTask(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         fragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainerView, taskResultFragment)
                 .commit();

@@ -13,17 +13,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import deakin.sit.improvedpersonalizedlearningexperiencesapp.LoginSessionData;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.AppDatabase;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTask;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskDao;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskQuestion;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskQuestionDao;
 
 public class TaskResultFragment extends Fragment {
-    StudentTaskDao studentTaskDao;
-    StudentTaskQuestionDao studentTaskQuestionDao;
-    int currentTaskID;
+//    StudentTaskDao studentTaskDao;
+//    StudentTaskQuestionDao studentTaskQuestionDao;
+    String currentTaskID;
     StudentTask completedTask;
     List<StudentTaskQuestion> completedQuestionList;
 
@@ -32,9 +30,6 @@ public class TaskResultFragment extends Fragment {
     QuestionAdapter questionAdapter;
 
     TextView scoreTextView;
-    public TaskResultFragment(int currentTaskID) {
-        this.currentTaskID = currentTaskID;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,10 +39,14 @@ public class TaskResultFragment extends Fragment {
 
 
         // Database
-        studentTaskDao = AppDatabase.getInstance(getContext()).studentTaskDao();
-        studentTaskQuestionDao = AppDatabase.getInstance(getContext()).studentTaskQuestionDao();
-        completedTask = studentTaskDao.getByTaskID(currentTaskID);
-        completedQuestionList = studentTaskQuestionDao.getAllByTaskID(currentTaskID);
+//        studentTaskDao = AppDatabase.getInstance(getContext()).studentTaskDao();
+//        studentTaskQuestionDao = AppDatabase.getInstance(getContext()).studentTaskQuestionDao();
+//        completedTask = studentTaskDao.getByTaskID(currentTaskID);
+//        completedQuestionList = studentTaskQuestionDao.getAllByTaskID(currentTaskID);
+//        completedTask = LoginSessionData.getTaskDataFromDevice(currentTaskID);
+//        completedQuestionList = completedTask.getStudentTaskQuestions();
+        completedTask = ((TaskActivity) getActivity()).currentTask;
+        completedQuestionList = completedTask.getStudentTaskQuestions();
 
         // Setup views
         answerRecyclerView = view.findViewById(R.id.answerRecyclerView);

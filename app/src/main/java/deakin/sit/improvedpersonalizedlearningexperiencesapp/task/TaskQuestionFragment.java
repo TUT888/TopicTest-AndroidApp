@@ -1,29 +1,42 @@
 package deakin.sit.improvedpersonalizedlearningexperiencesapp.task;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.List;
 
+import deakin.sit.improvedpersonalizedlearningexperiencesapp.LoginSessionData;
+import deakin.sit.improvedpersonalizedlearningexperiencesapp.MainActivity;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.AppDatabase;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTask;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskDao;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskQuestion;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskQuestionDao;
 
 public class TaskQuestionFragment extends Fragment {
-    StudentTaskDao studentTaskDao;
-    StudentTaskQuestionDao studentTaskQuestionDao;
-    int currentTaskID;
+    private static final String TAG = "INFO:TaskQuestionFragment";
+//    StudentTaskDao studentTaskDao;
+//    StudentTaskQuestionDao studentTaskQuestionDao;
+    String currentTaskID;
     StudentTask currentTask;
     List<StudentTaskQuestion> currentQuestionList;
 
@@ -32,9 +45,6 @@ public class TaskQuestionFragment extends Fragment {
     Button submitButton;
     RecyclerView questionRecyclerView;
     QuestionAdapter questionAdapter;
-    public TaskQuestionFragment(int taskID) {
-        this.currentTaskID = taskID;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,10 +53,12 @@ public class TaskQuestionFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_task_question, container, false);
 
         // Database
-        studentTaskDao = AppDatabase.getInstance(getContext()).studentTaskDao();
-        studentTaskQuestionDao = AppDatabase.getInstance(getContext()).studentTaskQuestionDao();
-        currentTask = studentTaskDao.getByTaskID(currentTaskID);
-        currentQuestionList = studentTaskQuestionDao.getAllByTaskID(currentTaskID);
+//        studentTaskDao = AppDatabase.getInstance(getContext()).studentTaskDao();
+//        studentTaskQuestionDao = AppDatabase.getInstance(getContext()).studentTaskQuestionDao();
+//        currentTask = LoginSessionData.getTaskDataFromDevice(currentTaskID);
+//        currentQuestionList = currentTask.getStudentTaskQuestions();
+        currentTask = ((TaskActivity) getActivity()).currentTask;
+        currentQuestionList = currentTask.getStudentTaskQuestions();
 
         // Setup views
         questionRecyclerView = view.findViewById(R.id.questionRecyclerView);
@@ -76,18 +88,73 @@ public class TaskQuestionFragment extends Fragment {
         // Update database: answer for questions
         currentQuestionList = questionAdapter.getResult();
         for (StudentTaskQuestion question : currentQuestionList) {
-            studentTaskQuestionDao.update(question);
+//            studentTaskQuestionDao.update(question);
             if (question.isCorrest()) {
                 score += 1;
             }
         }
+
         // Update database: task status and score
         currentTask.setScore(score);
-        currentTask.setTotalQuestion(currentQuestionList.size());
         currentTask.setFinish(true);
-        studentTaskDao.update(currentTask);
+        currentTask.setStudentTaskQuestions(currentQuestionList);
+//        studentTaskDao.update(currentTask);
+        saveTaskDetail();
 
-        // To result fragment
-        ((TaskActivity) getActivity()).finishTask();
+    }
+
+    // Backend database interaction
+    private void saveTaskDetail() {
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+
+        JSONArray questionJSONArray = new JSONArray();
+        for (StudentTaskQuestion question : currentTask.getStudentTaskQuestions()) {
+            JSONObject jsonQuestion = new JSONObject();
+            try {
+                jsonQuestion.put("title", currentTask.getTitle());
+                jsonQuestion.put("description", currentTask.getDescription());
+                jsonQuestion.put("choices", new JSONArray(question.getChoices()));
+                jsonQuestion.put("correctAnswer", question.getCorrectAnswer());
+                jsonQuestion.put("selectedAnswer", question.getSelectedAnswer());
+            } catch (Exception e) {
+                Log.e(TAG, "Error creating task question JSON: " + e.getMessage(), e);
+                return;
+            }
+            questionJSONArray.put(jsonQuestion);
+        }
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("finish", currentTask.isFinish());
+            jsonBody.put("score", currentTask.getScore());
+            jsonBody.put("listQuestion", questionJSONArray);
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating request body JSON: " + e.getMessage(), e);
+            return;
+        }
+
+        String url = MainActivity.BACKEND_URL + "tasks/" + currentTask.getId();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, url, jsonBody,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            // To result fragment
+                            ((TaskActivity) getActivity()).finishTask(response.getString("message"));
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error parsing response: " + e.getMessage(), e);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = error.networkResponse != null ? "HTTP " + error.networkResponse.statusCode + ": " + new String(error.networkResponse.data) : error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        Log.e(TAG, "Error saving: " + errorMsg, error);
+                    }
+                });
+
+        request.setRetryPolicy(new DefaultRetryPolicy(10000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(request);
     }
 }

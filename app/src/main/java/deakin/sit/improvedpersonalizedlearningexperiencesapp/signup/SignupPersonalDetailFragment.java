@@ -11,12 +11,10 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.AppDatabase;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.Student;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentDao;
 
 public class SignupPersonalDetailFragment extends Fragment {
-    StudentDao studentDao;
+//    StudentDao studentDao;
     EditText inputName, inputUsername, inputEmail, inputConfirmEmail, inputPassword, inputConfirmPassword, inputPhoneNumber;
     Button nextButton;
 
@@ -26,7 +24,7 @@ public class SignupPersonalDetailFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_signup_personal_detail, container, false);
 
-        studentDao = AppDatabase.getInstance(getContext()).studentDao();
+//        studentDao = AppDatabase.getInstance(getContext()).studentDao();
 
         // Setup views
         inputName = view.findViewById(R.id.inputName);
@@ -65,12 +63,6 @@ public class SignupPersonalDetailFragment extends Fragment {
         }
         if (!confirmPassword.equals(password)) {
             Toast.makeText(getContext(), "Password does not match", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Student existingStudent = studentDao.getStudentByUsername(username);
-        if (existingStudent != null) {
-            Toast.makeText(getContext(), "Username already existed", Toast.LENGTH_SHORT).show();
             return;
         }
 

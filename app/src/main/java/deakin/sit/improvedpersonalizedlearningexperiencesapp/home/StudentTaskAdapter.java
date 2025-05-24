@@ -48,11 +48,13 @@ public class StudentTaskAdapter extends RecyclerView.Adapter<StudentTaskAdapter.
         if (accountViewActivity!=null) {
             holder.beginTaskButton.setText("View task");
             holder.beginTaskButton.setOnClickListener(view -> {
-                accountViewActivity.viewTask(studentTask.getId());
+//                accountViewActivity.viewTask(studentTask.getId());
+                accountViewActivity.viewTask(studentTask);
             });
         } else if (homeActivity!=null) {
             holder.beginTaskButton.setOnClickListener(view -> {
-                homeActivity.beginTask(studentTask.getId());
+//                homeActivity.beginTask(studentTask.getId());
+                homeActivity.beginTask(studentTask);
             });
         }
     }
@@ -64,6 +66,7 @@ public class StudentTaskAdapter extends RecyclerView.Adapter<StudentTaskAdapter.
 
     public void updateTaskList(List<StudentTask> taskList) {
         this.studentTasks = taskList;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

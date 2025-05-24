@@ -1,29 +1,13 @@
 package deakin.sit.improvedpersonalizedlearningexperiencesapp.database;
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
 import java.io.Serializable;
 
-@Entity
 public class Student implements Serializable {
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-
-    @ColumnInfo(name = "name")
+    private String id;
     private String name;
-
-    @ColumnInfo(name = "username")
     private String username;
-
-    @ColumnInfo(name = "email")
     private String email;
-
-    @ColumnInfo(name = "password")
     private String password;
-
-    @ColumnInfo(name = "phone")
     private String phone;
 
     public Student(String name, String username, String email, String password, String phone) {
@@ -34,11 +18,20 @@ public class Student implements Serializable {
         this.phone = phone;
     }
 
-    public int getId() {
+    public Student(String id, String name, String username, String email, String password, String phone) {
+        this.id = id;
+        this.name = name;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

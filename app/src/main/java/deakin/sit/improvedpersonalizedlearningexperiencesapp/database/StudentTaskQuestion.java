@@ -4,31 +4,17 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity
-public class StudentTaskQuestion {
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-
-    @ColumnInfo(name = "taskID")
-    private int taskID;
-
-    @ColumnInfo(name = "title")
+public class StudentTaskQuestion implements Serializable {
     private String title;
-
-    @ColumnInfo(name = "description")
     private String description;
-
-    @ColumnInfo(name = "choices")
     private String[] choices;
-
-    @ColumnInfo(name = "correctAnswer")
     private int correctAnswer;
-
-    @ColumnInfo(name = "selectedAnswer")
     private int selectedAnswer;
 
-    public StudentTaskQuestion(int taskID, String title, String description, String[] choices, int correctAnswer) {
-        this.taskID = taskID;
+    public StudentTaskQuestion(String title, String description, String[] choices, int correctAnswer) {
         this.title = title;
         this.description = description;
         this.choices = choices;
@@ -36,24 +22,16 @@ public class StudentTaskQuestion {
         this.selectedAnswer = -1;
     }
 
+    public StudentTaskQuestion(String title, String description, String[] choices, int correctAnswer, int selectedAnswer) {
+        this.title = title;
+        this.description = description;
+        this.choices = choices;
+        this.correctAnswer = correctAnswer;
+        this.selectedAnswer = selectedAnswer;
+    }
+
     public boolean isCorrest() {
         return correctAnswer == selectedAnswer;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getTaskID() {
-        return taskID;
-    }
-
-    public void setTaskID(int taskID) {
-        this.taskID = taskID;
     }
 
     public String getTitle() {

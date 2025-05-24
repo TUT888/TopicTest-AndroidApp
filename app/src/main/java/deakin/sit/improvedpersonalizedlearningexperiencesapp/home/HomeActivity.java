@@ -1,5 +1,6 @@
 package deakin.sit.improvedpersonalizedlearningexperiencesapp.home;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,31 +32,31 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import deakin.sit.improvedpersonalizedlearningexperiencesapp.LoginSessionData;
+import deakin.sit.improvedpersonalizedlearningexperiencesapp.MainActivity;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.account.AccountViewActivity;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.AppDatabase;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.Student;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentInterest;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentInterestDao;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTask;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskDao;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskQuestion;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskQuestionDao;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.task.TaskActivity;
 
 public class HomeActivity extends AppCompatActivity {
-    static final String IP_ADDRESS = "http://192.168.4.28:5000/";
-    static final String TAG = "HomeActivity";
+    private static final String TAG = "INFO:HomeActivity";
+//    public static final String BACKEND_URL = "http://192.168.4.28:5000/";
+//    static final String IP_ADDRESS = "http://192.168.4.28:5000/";
 
-    StudentTaskDao studentTaskDao;
-    StudentTaskQuestionDao studentTaskQuestionDao;
-    StudentInterestDao studentInterestDao;
+//    StudentTaskDao studentTaskDao;
+//    StudentTaskQuestionDao studentTaskQuestionDao;
+//    StudentInterestDao studentInterestDao;
 
     Student currentStudent;
+    ArrayList<String> currentStudentInterest;
     List<StudentTask> availableTasks;
 
     TextView studentNameTextView, notificationTextView;
@@ -78,14 +79,17 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         // Database
-        studentTaskDao = AppDatabase.getInstance(this).studentTaskDao();
-        studentTaskQuestionDao = AppDatabase.getInstance(this).studentTaskQuestionDao();
-        studentInterestDao = AppDatabase.getInstance(this).studentInterestDao();
+//        studentTaskDao = AppDatabase.getInstance(this).studentTaskDao();
+//        studentTaskQuestionDao = AppDatabase.getInstance(this).studentTaskQuestionDao();
+//        studentInterestDao = AppDatabase.getInstance(this).studentInterestDao();
 
         // Get data
-        Intent intent = getIntent();
-        currentStudent = (Student) intent.getSerializableExtra("Student");
-        availableTasks = studentTaskDao.getAllByStudentID(currentStudent.getId(), false);
+        currentStudent = (Student) getIntent().getSerializableExtra("Student");
+        currentStudentInterest = (ArrayList<String>) getIntent().getSerializableExtra("StudentInterest");
+//        currentStudent = LoginSessionData.currentStudent;
+//        availableTasks = getAvailableTasks(LoginSessionData.studentTaskList);
+//        availableTasks = studentTaskDao.getAllByStudentID(currentStudent.getId(), false);
+        fetchAvailableTask();
 
         // Setup views
         studentNameTextView = findViewById(R.id.studentNameTextView);
@@ -101,9 +105,10 @@ public class HomeActivity extends AppCompatActivity {
 
         // Config views
         studentNameTextView.setText(currentStudent.getName());
-        notificationTextView.setText(String.format("You have %d task to do", availableTasks.size()));
+        notificationTextView.setText(String.format("You have 0 task to do"));
 
         // Config recycler views
+        availableTasks = new ArrayList<StudentTask>();
         studentTaskAdapter = new StudentTaskAdapter(availableTasks, this);
         taskListRecyclerView.setAdapter(studentTaskAdapter);
         taskListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -121,34 +126,44 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void loadTaskAndRefresh() {
-        availableTasks = studentTaskDao.getAllByStudentID(currentStudent.getId(), false);
+    public void loadTaskAndRefresh(List<StudentTask> updatedTaskList) {
+//        availableTasks = studentTaskDao.getAllByStudentID(currentStudent.getId(), false);
+//        LoginSessionData.studentAvailableTaskList = updatedTaskList;
+        availableTasks = updatedTaskList;
         notificationTextView.setText(String.format("You have %d task to do", availableTasks.size()));
         studentTaskAdapter.updateTaskList(availableTasks);
     }
 
-    public void beginTask(int taskID) {
+//    public void beginTask(String taskID) {
+//        Intent intent = new Intent(this, TaskActivity.class);
+//        intent.putExtra("TaskID", taskID);
+//        taskActivityResultLauncher.launch(intent);
+//    }
+
+    public void beginTask(StudentTask task) {
         Intent intent = new Intent(this, TaskActivity.class);
-        intent.putExtra("TaskID", taskID);
+        intent.putExtra("StudentTask", task);
         taskActivityResultLauncher.launch(intent);
     }
 
     public void generateTaskWithAI(View view) {
-        int studentID = currentStudent.getId();
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        String studentID = currentStudent.getId();
         // Get random interested topic, for example: Mobile Application Development
-        List<StudentInterest> allTopic = studentInterestDao.getAllStudentInterest(studentID);
+//        List<StudentInterest> allTopic = studentInterestDao.getAllStudentInterest(studentID);
         Random rand = new Random();
-        String selectedTopic = allTopic.get(rand.nextInt(allTopic.size())).getName();
+        String selectedTopic = currentStudentInterest.get(rand.nextInt(currentStudentInterest.size()));
 
         // Create new task
-        studentTaskDao.insert(new StudentTask(studentID, selectedTopic, "Test your knowledge for " + selectedTopic));
+        StudentTask newTask = new StudentTask(studentID, selectedTopic, "Test your knowledge for " + selectedTopic);
+//        studentTaskDao.insert(new StudentTask(studentID, selectedTopic, "Test your knowledge for " + selectedTopic));
 
-        List<StudentTask> taskList = studentTaskDao.getAllByStudentID(studentID, false);
-        int taskID = taskList.get(taskList.size()-1).getId();
+//        List<StudentTask> taskList = studentTaskDao.getAllByStudentID(studentID, false);
+//        int taskID = taskList.get(taskList.size()-1).getId();
 
         // URL for the Flask server
-        String url = IP_ADDRESS + "getQuiz?topic=" + selectedTopic.replaceAll("\\s", "");
-        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = MainActivity.BACKEND_URL + "getQuiz?topic=" + selectedTopic.replaceAll("\\s", "");
 
         // Create the JSON Object Request
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -180,11 +195,15 @@ public class HomeActivity extends AppCompatActivity {
                             Log.d("INFO-ANSWER", String.valueOf(correctAnswer));
 
                             // Add to the list
-                            studentTaskQuestionDao.insert(new StudentTaskQuestion(
-                                    taskID, questionTitle, question, choiceList, correctAnswer
+                            newTask.addQuestion(new StudentTaskQuestion(
+                                    questionTitle, question, choiceList, correctAnswer
                             ));
+//                            studentTaskQuestionDao.insert(new StudentTaskQuestion(
+//                                    taskID, questionTitle, question, choiceList, correctAnswer
+//                            ));
                         }
-                        loadTaskAndRefresh();
+                        addNewTaskToServer(newTask);
+                        fetchAvailableTask();
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing JSON: " + e.getMessage(), e);
                         Toast.makeText(HomeActivity.this, "Error parsing JSON: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -226,8 +245,9 @@ public class HomeActivity extends AppCompatActivity {
     public void handleResultFromTaskActivity(ActivityResult result) {
         if(result.getResultCode() == RESULT_OK){
             if (result.getData() !=null) {
-                loadTaskAndRefresh();
-                studentTaskAdapter.notifyDataSetChanged();
+//                loadTaskAndRefresh();
+//                studentTaskAdapter.notifyDataSetChanged();
+                fetchAvailableTask();
                 String message = result.getData().getStringExtra("Message");
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             } else {
@@ -238,5 +258,125 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "An error occurred", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // Backend database interaction
+    private void addNewTaskToServer(StudentTask task) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        JSONArray questionJSONArray = new JSONArray();
+        for (StudentTaskQuestion question : task.getStudentTaskQuestions()) {
+            JSONObject jsonQuestion = new JSONObject();
+            try {
+                jsonQuestion.put("title", question.getTitle());
+                jsonQuestion.put("description", question.getDescription());
+                jsonQuestion.put("choices", new JSONArray(question.getChoices()));
+                jsonQuestion.put("correctAnswer", question.getCorrectAnswer());
+                jsonQuestion.put("selectedAnswer", question.getSelectedAnswer());
+            } catch (Exception e) {
+                Log.e(TAG, "Error creating task question JSON: " + e.getMessage(), e);
+                return;
+            }
+            questionJSONArray.put(jsonQuestion);
+        }
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("student_id", task.getStudentID());
+            jsonBody.put("title", task.getTitle());
+            jsonBody.put("description", task.getDescription());
+            jsonBody.put("listQuestion", questionJSONArray);
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating request body JSON: " + e.getMessage(), e);
+            return;
+        }
+
+        String url = MainActivity.BACKEND_URL + "tasks";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, jsonBody,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Toast.makeText(HomeActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
+                            finish();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error parsing response: " + e.getMessage(), e);
+                            Toast.makeText(HomeActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = error.networkResponse != null ? "HTTP " + error.networkResponse.statusCode + ": " + new String(error.networkResponse.data) : error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        Log.e(TAG, "Error saving note: " + errorMsg, error);
+                        Toast.makeText(HomeActivity.this, "Error saving note: " + errorMsg, Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        request.setRetryPolicy(new DefaultRetryPolicy(10000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(request);
+    }
+
+    public void fetchAvailableTask() {
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        String url = MainActivity.BACKEND_URL + "tasks?student_id=" + currentStudent.getId() + "&finish=0";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.i(TAG, "Response: " + response.toString());
+
+                            JSONArray tasksArray = response.getJSONArray("tasks");
+
+                            List<StudentTask> newStudentTaskList = new ArrayList<StudentTask>();
+                            for (int i = 0; i < tasksArray.length(); i++) {
+                                JSONObject taskJSON = tasksArray.getJSONObject(i);
+
+                                JSONArray taskQuestionArray = taskJSON.getJSONArray("listQuestions");
+                                List<StudentTaskQuestion> taskQuestions = new ArrayList<StudentTaskQuestion>();
+                                for (int k = 0; k < taskQuestionArray.length(); k++) {
+                                    JSONObject jsonQuestion = taskQuestionArray.getJSONObject(k);
+                                    taskQuestions.add(new StudentTaskQuestion(
+                                        jsonQuestion.getString("title"),
+                                        jsonQuestion.getString("description"),
+                                        jsonQuestion.getJSONArray("choices").join("\t").split("\t"),
+                                        jsonQuestion.getInt("correctAnswer"),
+                                        jsonQuestion.getInt("selectedAnswer")
+                                    ));
+
+                                }
+                                StudentTask task = new StudentTask(
+                                    taskJSON.getString("_id"),
+                                    taskJSON.getString("student_id"),
+                                    taskJSON.getString("title"),
+                                    taskJSON.getString("description"),
+                                    taskJSON.getBoolean("finish"),
+                                    taskJSON.getInt("score"),
+                                    taskQuestions
+                                );
+
+                                newStudentTaskList.add(task);
+                            }
+                            loadTaskAndRefresh(newStudentTaskList);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error parsing response: " + e.getMessage(), e);
+                            Toast.makeText(HomeActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        String errorMsg = error.networkResponse != null ? "HTTP " + error.networkResponse.statusCode + ": " + new String(error.networkResponse.data) : error.getMessage() != null ? error.getMessage() : "Unknown error";
+                        Log.e(TAG, "Error saving note: " + errorMsg, error);
+                        Toast.makeText(HomeActivity.this, "Error saving note: " + errorMsg, Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        request.setRetryPolicy(new DefaultRetryPolicy(10000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(request);
     }
 }
