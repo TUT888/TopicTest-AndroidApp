@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".account.CheckoutActivity"
+    android:orientation="vertical"
+    android:background="@color/soft_background">
+
+    <Button
+        android:backgroundTint="@color/chinese_blue"
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:layout_marginVertical="10sp"
+        android:layout_marginHorizontal="20sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Upgrade your experience"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:layout_marginHorizontal="20sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10sp"
+        android:layout_marginTop="20sp"
+        android:background="@drawable/task_block_background"
+        android:layout_marginHorizontal="20sp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Starter"
+            android:textSize="30sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Improved Quiz generation"
+            android:textSize="20sp"/>
+        <Button
+            android:id="@+id/purchaseStartButton"
+            android:backgroundTint="@color/chinese_blue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Purchase"
+            android:layout_marginVertical="10sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10sp"
+        android:layout_marginTop="20sp"
+        android:background="@drawable/task_block_background"
+        android:layout_marginHorizontal="20sp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Intermediate"
+            android:textSize="30sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Improved Quiz generation"
+            android:textSize="20sp"/>
+        <Button
+            android:id="@+id/purchaseIntermediateButton"
+            android:backgroundTint="@color/chinese_blue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Purchase"
+            android:layout_marginVertical="10sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10sp"
+        android:layout_marginTop="20sp"
+        android:background="@drawable/task_block_background"
+        android:layout_marginHorizontal="20sp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Advanced"
+            android:textSize="30sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Improved Quiz generation"
+            android:textSize="20sp"/>
+        <Button
+            android:id="@+id/purchaseAdvancedButton"
+            android:backgroundTint="@color/chinese_blue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Purchase"
+            android:layout_marginVertical="10sp"/>
+    </LinearLayout>
+</LinearLayout>
