@@ -20,8 +20,7 @@ public class InterestAdapter extends RecyclerView.Adapter<InterestAdapter.ViewHo
     SignupPersonalInterestFragment fragment;
 
     List<StudentInterest> availableStudentInterests;
-//    List<Interest> selectedInterests;
-//    boolean allowSelection;
+
     int countSelection = 0;
     final int maxSelection = 10;
 

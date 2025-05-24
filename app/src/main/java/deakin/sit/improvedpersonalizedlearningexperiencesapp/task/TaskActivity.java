@@ -12,11 +12,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 
-import java.util.List;
-
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTask;
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskQuestion;
 
 public class TaskActivity extends AppCompatActivity {
     FragmentContainerView fragmentContainerView;
@@ -45,8 +42,6 @@ public class TaskActivity extends AppCompatActivity {
         fragmentContainerView = findViewById(R.id.fragmentContainerView);
 
         // Config fragments
-//        taskQuestionFragment = new TaskQuestionFragment(taskID);
-//        taskResultFragment = new TaskResultFragment(taskID);
         taskQuestionFragment = new TaskQuestionFragment();
         taskResultFragment = new TaskResultFragment();
 

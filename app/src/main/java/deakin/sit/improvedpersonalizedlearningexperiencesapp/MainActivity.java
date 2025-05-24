@@ -30,7 +30,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.Student;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.home.HomeActivity;
@@ -41,9 +40,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String BACKEND_URL = "http://192.168.4.28:5000/";
     private RequestQueue queue;
     Student currentStudent;
-
-//    StudentDao studentDao;
-//    StudentInterestDao studentInterestDao;
 
     EditText inputUsername, inputPassword;
     Button loginButton;
@@ -62,10 +58,6 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Database
-//        studentDao = AppDatabase.getInstance(this).studentDao();
-//        studentInterestDao = AppDatabase.getInstance(this).studentInterestDao();
-
         // Setup views
         inputUsername = findViewById(R.id.inputUsername);
         inputPassword = findViewById(R.id.inputPassword);
@@ -83,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-
     public void handleLoginButton(View view) {
         String username = inputUsername.getText().toString();
         String password = inputPassword.getText().toString();
@@ -91,20 +82,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Please enter username and password", Toast.LENGTH_SHORT).show();
             return;
         }
-
-//        Student existingStudent = studentDao.login(username, password);
         getStudentFromServer(username, password);
-//        if (currentStudent==null) {
-//            Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        LoginSessionData.currentStudent = currentStudent;
-//        inputUsername.setText("");
-//        inputPassword.setText("");
-//
-//        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-//        startActivity(intent);
     }
 
     public void handleSignupButton(View view) {
@@ -153,14 +131,11 @@ public class MainActivity extends AppCompatActivity {
 
                             JSONArray interestArray = studentJSON.getJSONArray("interest");
                             ArrayList<String> studentInterest = new ArrayList<String>();
-//                            LoginSessionData.studentInterests = new ArrayList<String>();
                             for (int i = 0; i < interestArray.length(); i++) {
                                 String interest = interestArray.getString(i);
                                 studentInterest.add(interest);
                             };
 
-                            // Update login session data
-//                            LoginSessionData.currentStudent = currentStudent;
                             inputUsername.setText("");
                             inputPassword.setText("");
 

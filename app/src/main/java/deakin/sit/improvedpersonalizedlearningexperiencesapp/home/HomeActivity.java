@@ -1,6 +1,5 @@
 package deakin.sit.improvedpersonalizedlearningexperiencesapp.home;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,7 +36,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.LoginSessionData;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.MainActivity;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.account.AccountViewActivity;
@@ -48,12 +46,6 @@ import deakin.sit.improvedpersonalizedlearningexperiencesapp.task.TaskActivity;
 
 public class HomeActivity extends AppCompatActivity {
     private static final String TAG = "INFO:HomeActivity";
-//    public static final String BACKEND_URL = "http://192.168.4.28:5000/";
-//    static final String IP_ADDRESS = "http://192.168.4.28:5000/";
-
-//    StudentTaskDao studentTaskDao;
-//    StudentTaskQuestionDao studentTaskQuestionDao;
-//    StudentInterestDao studentInterestDao;
 
     Student currentStudent;
     ArrayList<String> currentStudentInterest;
@@ -78,17 +70,9 @@ public class HomeActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Database
-//        studentTaskDao = AppDatabase.getInstance(this).studentTaskDao();
-//        studentTaskQuestionDao = AppDatabase.getInstance(this).studentTaskQuestionDao();
-//        studentInterestDao = AppDatabase.getInstance(this).studentInterestDao();
-
         // Get data
         currentStudent = (Student) getIntent().getSerializableExtra("Student");
         currentStudentInterest = (ArrayList<String>) getIntent().getSerializableExtra("StudentInterest");
-//        currentStudent = LoginSessionData.currentStudent;
-//        availableTasks = getAvailableTasks(LoginSessionData.studentTaskList);
-//        availableTasks = studentTaskDao.getAllByStudentID(currentStudent.getId(), false);
         fetchAvailableTask();
 
         // Setup views
@@ -127,18 +111,10 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void loadTaskAndRefresh(List<StudentTask> updatedTaskList) {
-//        availableTasks = studentTaskDao.getAllByStudentID(currentStudent.getId(), false);
-//        LoginSessionData.studentAvailableTaskList = updatedTaskList;
         availableTasks = updatedTaskList;
         notificationTextView.setText(String.format("You have %d task to do", availableTasks.size()));
         studentTaskAdapter.updateTaskList(availableTasks);
     }
-
-//    public void beginTask(String taskID) {
-//        Intent intent = new Intent(this, TaskActivity.class);
-//        intent.putExtra("TaskID", taskID);
-//        taskActivityResultLauncher.launch(intent);
-//    }
 
     public void beginTask(StudentTask task) {
         Intent intent = new Intent(this, TaskActivity.class);
@@ -149,18 +125,13 @@ public class HomeActivity extends AppCompatActivity {
     public void generateTaskWithAI(View view) {
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        String studentID = currentStudent.getId();
         // Get random interested topic, for example: Mobile Application Development
-//        List<StudentInterest> allTopic = studentInterestDao.getAllStudentInterest(studentID);
         Random rand = new Random();
         String selectedTopic = currentStudentInterest.get(rand.nextInt(currentStudentInterest.size()));
 
         // Create new task
+        String studentID = currentStudent.getId();
         StudentTask newTask = new StudentTask(studentID, selectedTopic, "Test your knowledge for " + selectedTopic);
-//        studentTaskDao.insert(new StudentTask(studentID, selectedTopic, "Test your knowledge for " + selectedTopic));
-
-//        List<StudentTask> taskList = studentTaskDao.getAllByStudentID(studentID, false);
-//        int taskID = taskList.get(taskList.size()-1).getId();
 
         // URL for the Flask server
         String url = MainActivity.BACKEND_URL + "getQuiz?topic=" + selectedTopic.replaceAll("\\s", "");
@@ -198,9 +169,6 @@ public class HomeActivity extends AppCompatActivity {
                             newTask.addQuestion(new StudentTaskQuestion(
                                     questionTitle, question, choiceList, correctAnswer
                             ));
-//                            studentTaskQuestionDao.insert(new StudentTaskQuestion(
-//                                    taskID, questionTitle, question, choiceList, correctAnswer
-//                            ));
                         }
                         addNewTaskToServer(newTask);
                         fetchAvailableTask();
@@ -245,8 +213,6 @@ public class HomeActivity extends AppCompatActivity {
     public void handleResultFromTaskActivity(ActivityResult result) {
         if(result.getResultCode() == RESULT_OK){
             if (result.getData() !=null) {
-//                loadTaskAndRefresh();
-//                studentTaskAdapter.notifyDataSetChanged();
                 fetchAvailableTask();
                 String message = result.getData().getStringExtra("Message");
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
@@ -298,7 +264,6 @@ public class HomeActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             Toast.makeText(HomeActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
-                            finish();
                         } catch (Exception e) {
                             Log.e(TAG, "Error parsing response: " + e.getMessage(), e);
                             Toast.makeText(HomeActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -339,10 +304,17 @@ public class HomeActivity extends AppCompatActivity {
                                 List<StudentTaskQuestion> taskQuestions = new ArrayList<StudentTaskQuestion>();
                                 for (int k = 0; k < taskQuestionArray.length(); k++) {
                                     JSONObject jsonQuestion = taskQuestionArray.getJSONObject(k);
+
+                                    JSONArray choicesJSONArray = jsonQuestion.getJSONArray("choices");
+                                    String[] choicesArray = new String[choicesJSONArray.length()];
+                                    for (int c = 0; c < choicesJSONArray.length(); c++) {
+                                        choicesArray[c] = choicesJSONArray.getString(i);
+                                    }
                                     taskQuestions.add(new StudentTaskQuestion(
                                         jsonQuestion.getString("title"),
                                         jsonQuestion.getString("description"),
-                                        jsonQuestion.getJSONArray("choices").join("\t").split("\t"),
+//                                        jsonQuestion.getJSONArray("choices").join("\t").split("\t"),
+                                        choicesArray,
                                         jsonQuestion.getInt("correctAnswer"),
                                         jsonQuestion.getInt("selectedAnswer")
                                     ));

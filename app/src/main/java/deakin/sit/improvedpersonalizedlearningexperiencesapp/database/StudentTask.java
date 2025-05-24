@@ -16,7 +16,7 @@ public class StudentTask implements Serializable {
     private String description;
     private boolean finish;
     private int score;
-//    private int totalQuestion;
+
     private List<StudentTaskQuestion> studentTaskQuestions;
 
     public StudentTask(String studentID, String title, String description) {
@@ -25,7 +25,6 @@ public class StudentTask implements Serializable {
         this.description = description;
         this.finish = false;
         this.score = 0;
-//        this.totalQuestion = 0;
         this.studentTaskQuestions = new ArrayList<StudentTaskQuestion>();
     }
 
@@ -86,14 +85,6 @@ public class StudentTask implements Serializable {
     public void setScore(int score) {
         this.score = score;
     }
-
-//    public int getTotalQuestion() {
-//        return totalQuestion;
-//    }
-//
-//    public void setTotalQuestion(int totalQuestion) {
-//        this.totalQuestion = totalQuestion;
-//    }
 
     public List<StudentTaskQuestion> getStudentTaskQuestions() {
         return studentTaskQuestions;

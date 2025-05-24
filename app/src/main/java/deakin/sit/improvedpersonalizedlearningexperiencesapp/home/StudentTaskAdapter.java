@@ -48,12 +48,10 @@ public class StudentTaskAdapter extends RecyclerView.Adapter<StudentTaskAdapter.
         if (accountViewActivity!=null) {
             holder.beginTaskButton.setText("View task");
             holder.beginTaskButton.setOnClickListener(view -> {
-//                accountViewActivity.viewTask(studentTask.getId());
                 accountViewActivity.viewTask(studentTask);
             });
         } else if (homeActivity!=null) {
             holder.beginTaskButton.setOnClickListener(view -> {
-//                homeActivity.beginTask(studentTask.getId());
                 homeActivity.beginTask(studentTask);
             });
         }

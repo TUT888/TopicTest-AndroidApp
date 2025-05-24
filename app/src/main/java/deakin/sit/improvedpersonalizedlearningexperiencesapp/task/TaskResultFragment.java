@@ -13,15 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.LoginSessionData;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTask;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTaskQuestion;
 
 public class TaskResultFragment extends Fragment {
-//    StudentTaskDao studentTaskDao;
-//    StudentTaskQuestionDao studentTaskQuestionDao;
-    String currentTaskID;
     StudentTask completedTask;
     List<StudentTaskQuestion> completedQuestionList;
 
@@ -37,14 +33,7 @@ public class TaskResultFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_task_result, container, false);
 
-
-        // Database
-//        studentTaskDao = AppDatabase.getInstance(getContext()).studentTaskDao();
-//        studentTaskQuestionDao = AppDatabase.getInstance(getContext()).studentTaskQuestionDao();
-//        completedTask = studentTaskDao.getByTaskID(currentTaskID);
-//        completedQuestionList = studentTaskQuestionDao.getAllByTaskID(currentTaskID);
-//        completedTask = LoginSessionData.getTaskDataFromDevice(currentTaskID);
-//        completedQuestionList = completedTask.getStudentTaskQuestions();
+        // Get data
         completedTask = ((TaskActivity) getActivity()).currentTask;
         completedQuestionList = completedTask.getStudentTaskQuestions();
 

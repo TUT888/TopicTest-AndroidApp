@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,7 +25,6 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-import deakin.sit.improvedpersonalizedlearningexperiencesapp.LoginSessionData;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.MainActivity;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTask;
@@ -34,12 +32,8 @@ import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.StudentTas
 
 public class TaskQuestionFragment extends Fragment {
     private static final String TAG = "INFO:TaskQuestionFragment";
-//    StudentTaskDao studentTaskDao;
-//    StudentTaskQuestionDao studentTaskQuestionDao;
-    String currentTaskID;
     StudentTask currentTask;
     List<StudentTaskQuestion> currentQuestionList;
-
 
     TextView noteTextView, taskTitleTextView, taskDescriptionTextView;
     Button submitButton;
@@ -52,11 +46,7 @@ public class TaskQuestionFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_task_question, container, false);
 
-        // Database
-//        studentTaskDao = AppDatabase.getInstance(getContext()).studentTaskDao();
-//        studentTaskQuestionDao = AppDatabase.getInstance(getContext()).studentTaskQuestionDao();
-//        currentTask = LoginSessionData.getTaskDataFromDevice(currentTaskID);
-//        currentQuestionList = currentTask.getStudentTaskQuestions();
+        // Get data
         currentTask = ((TaskActivity) getActivity()).currentTask;
         currentQuestionList = currentTask.getStudentTaskQuestions();
 
@@ -85,22 +75,21 @@ public class TaskQuestionFragment extends Fragment {
 
     public void handleSubmitButton(View view) {
         int score = 0;
-        // Update database: answer for questions
+
+        // Update score data
         currentQuestionList = questionAdapter.getResult();
         for (StudentTaskQuestion question : currentQuestionList) {
-//            studentTaskQuestionDao.update(question);
             if (question.isCorrest()) {
                 score += 1;
             }
         }
 
-        // Update database: task status and score
+        // Update data: task status, score and selected answers
         currentTask.setScore(score);
         currentTask.setFinish(true);
         currentTask.setStudentTaskQuestions(currentQuestionList);
-//        studentTaskDao.update(currentTask);
-        saveTaskDetail();
 
+        saveTaskDetail();
     }
 
     // Backend database interaction

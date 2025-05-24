@@ -34,9 +34,6 @@ public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "INFO:SignupActivity";
     private RequestQueue queue;
 
-//    StudentDao studentDao;
-//    StudentInterestDao studentInterestDao;
-
     FragmentContainerView fragmentContainerView;
     FragmentManager fragmentManager;
 
@@ -55,10 +52,6 @@ public class SignupActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        // Database
-//        studentDao = AppDatabase.getInstance(this).studentDao();
-//        studentInterestDao = AppDatabase.getInstance(this).studentInterestDao();
 
         // Setup fragments
         signupPersonalDetailFragment = new SignupPersonalDetailFragment();
@@ -79,21 +72,13 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void registerNewStudent(List<StudentInterest> selectedInterests) {
-        // Add new student
-//        studentDao.register(newStudent);
-
-        // Add interests
+        // Prepare interest array
         JSONArray interestJSONArray = new JSONArray();
-//        int studentID = studentDao.getStudentByUsername(newStudent.getUsername()).getId();
-//        Log.d("NEW_STUDENT_ID", String.valueOf(studentID));
         for (StudentInterest interest : selectedInterests) {
-//            studentInterestDao.insert(new StudentInterest(studentID, interest.getName()));
             interestJSONArray.put(interest.getName());
         }
 
         addNewStudentToServer(interestJSONArray);
-        setResult(RESULT_OK);
-        finish();
     }
 
     // Backend database interaction
@@ -102,7 +87,6 @@ public class SignupActivity extends AppCompatActivity {
 
         JSONObject jsonBody = new JSONObject();
         try {
-//            jsonBody.put("student_id", newStudent.getId());
             jsonBody.put("name", newStudent.getName());
             jsonBody.put("username", newStudent.getUsername());
             jsonBody.put("email", newStudent.getEmail());
@@ -121,6 +105,7 @@ public class SignupActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             Toast.makeText(SignupActivity.this, response.getString("message"), Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_OK);
                             finish();
                         } catch (Exception e) {
                             Log.e(TAG, "Error parsing response: " + e.getMessage(), e);

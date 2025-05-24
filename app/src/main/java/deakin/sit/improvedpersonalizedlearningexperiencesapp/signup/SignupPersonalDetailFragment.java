@@ -14,7 +14,6 @@ import deakin.sit.improvedpersonalizedlearningexperiencesapp.R;
 import deakin.sit.improvedpersonalizedlearningexperiencesapp.database.Student;
 
 public class SignupPersonalDetailFragment extends Fragment {
-//    StudentDao studentDao;
     EditText inputName, inputUsername, inputEmail, inputConfirmEmail, inputPassword, inputConfirmPassword, inputPhoneNumber;
     Button nextButton;
 
@@ -23,8 +22,6 @@ public class SignupPersonalDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_signup_personal_detail, container, false);
-
-//        studentDao = AppDatabase.getInstance(getContext()).studentDao();
 
         // Setup views
         inputName = view.findViewById(R.id.inputName);
